@@ -19,14 +19,6 @@ public final class ActionInput {
     private Movie addedMovie;
     private String deletedMovie;
 
-//    public ActionInput(String startsWith, Filter filters, String objectType, String count,
-//                       Double rate) {
-//        this.startsWith = startsWith;
-//        this.filters = filters;
-//        this.objectType = objectType;
-//        this.count = count;
-//        this.rate = rate;
-//    }
     public ActionInput() { }
     /**
      *
@@ -140,7 +132,7 @@ public final class ActionInput {
         return subscribedGenre;
     }
 
-    public void setStartsWith(String startsWith) {
+    public void setStartsWith(final String startsWith) {
         this.startsWith = startsWith;
     }
 

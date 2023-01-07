@@ -4,7 +4,7 @@ public class Notifications {
     private String message;
     private String movieName;
 
-    public Notifications(String movie, final String message) {
+    public Notifications(final String movie, final String message) {
         this.movieName = movie;
         this.message = message;
     }

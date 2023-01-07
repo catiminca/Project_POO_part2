@@ -42,8 +42,9 @@ public class CurrentPage {
             this.currentList = new CurrentMovieList();
         }
         if (mementoUse != null) {
-            for (int i = 0; i < mementoUse.size(); i++)
+            for (int i = 0; i < mementoUse.size(); i++) {
                 memento.add(mementoUse.getByIndex(i));
+            }
         }
         if (rate != null) {
             this.rates = new Rates(rate.getUsers());
@@ -153,8 +154,9 @@ public class CurrentPage {
             this.getCurrentPage.setLastPage(this.currentPage);
             this.currentMovieList = new ArrayList<>();
             this.currentMovieList = sortByCountry(currentUser);
-            if (!this.memento.getMem().getState().equals("movies"))
+            if (!this.memento.getMem().getState().equals("movies")) {
                 this.memento.add(getCurrentPage.saveStateToMemento());
+            }
             this.succespage = 1;
             newuser = new User(user);
             outCommand = new OutCommand(null, currentMovieList, newuser);
@@ -173,7 +175,8 @@ public class CurrentPage {
     public void seeDetails(final Actions actions, final ArrayNode output) {
         this.succespage = 0;
         OutCommand outCommand;
-        if (this.memento.getMem().getState().equals("movies") && currentList.getMovielist().size() > 0) {
+        if (this.memento.getMem().getState().equals("movies")
+                && currentList.getMovielist().size() > 0) {
 
             int ok = 0;
             if (checkMovie(actions)) {
@@ -220,7 +223,15 @@ public class CurrentPage {
             output.addPOJO(outCommand);
         }
     }
-    public void backCommand(final Actions actions, final ArrayNode output, final CurrentUser currentUser) {
+
+    /**
+     * functie pentru realizarea comenzii de a te intoarce pe pagina anterioara
+     * @param actions
+     * @param output
+     * @param currentUser
+     */
+    public void backCommand(final Actions actions, final ArrayNode output,
+                            final CurrentUser currentUser) {
         if (this.memento.getMem().getState().equals("homepage")
                 || this.memento.getMem().getState().equals("login")
                 || this.memento.getMem().getState().equals("register")) {
@@ -325,7 +336,7 @@ public class CurrentPage {
             return;
         }
         if (actions.getFeature().equals("subscribe")) {
-            executeSubcribe(actions, output, user);
+            executeSubcribe(actions, output);
             return;
         }
         OutCommand outCommand = new OutCommand("Error");
@@ -379,7 +390,7 @@ public class CurrentPage {
      * @param actions
      * @param output
      */
-    public void loginAction(final Actions actions, final ArrayNode output, DataBase base) {
+    public void loginAction(final Actions actions, final ArrayNode output, final DataBase base) {
         OutCommand outCommand = null;
         this.succes = 0;
         if (user == null) {
@@ -506,7 +517,8 @@ public class CurrentPage {
                         .equals(user.getCredentials().getName())) {
                     dataBase.getAllusers().get(i).getCredentials().setBalance(String
                             .valueOf(balance));
-                    int num = dataBase.getAllusers().get(i).getTokensCount() + Integer.parseInt(actions.getCount());
+                    int num = dataBase.getAllusers().get(i).getTokensCount()
+                            + Integer.parseInt(actions.getCount());
                     dataBase.getAllusers().get(i).setTokensCount(num);
                     break;
                 }
@@ -527,16 +539,17 @@ public class CurrentPage {
     public void buyPremiumAcc(final ArrayNode output) {
         OutCommand outCommand;
         this.succes = 0;
+        int aux = 10;
         if (getCurrentPage.getCurrent().equals("upgrades")) {
             user.getCredentials().setAccountType("premium");
-            user.setTokensCount(user.getTokensCount() - 10);
+            user.setTokensCount(user.getTokensCount() - aux);
             this.succes = 1;
             for (int i = 0; i < dataBase.getAllusers().size(); i++) {
                 if (dataBase.getAllusers().get(i).getCredentials().getName()
                         .equals(user.getCredentials().getName())) {
                     dataBase.getAllusers().get(i).getCredentials().setAccountType("premium");
                     dataBase.getAllusers().get(i).setTokensCount(dataBase.getAllusers().get(i)
-                            .getTokensCount() - 10);
+                            .getTokensCount() - aux);
                     break;
                 }
             }
@@ -585,7 +598,8 @@ public class CurrentPage {
                             for (int i = 0; i < dataBase.getAllusers().size(); i++) {
                                 if (dataBase.getAllusers().get(i).getCredentials().getName()
                                         .equals(this.user.getCredentials().getName())) {
-                                    dataBase.getAllusers().get(i).setPurchasedMovies(currentMovieList);
+                                    dataBase.getAllusers().get(i)
+                                            .setPurchasedMovies(currentMovieList);
                                     setTokensCountByUser(i);
                                 }
                             }
@@ -785,18 +799,7 @@ public class CurrentPage {
                                 setRatingByUser(actions, i);
                             }
                         }
-                        for (int i = 0; i < rates.getUsers().size(); i++) {
-                            if (rates.getUsers().get(i).getCredentials().getName()
-                                    .equals(user.getCredentials().getName())) {
-                                Movie movierated = new Movie(currentMovieList.get(0));
-                                rates.getUsers().get(i).getRatedMovies()
-                                        .add(movierated);
-                                rates.getUsers().get(i).getRatedMovies().get(rates
-                                                .getUsers().get(i).getRatedMovies().size() - 1)
-                                        .setRating(actions.getRate());
-                                break;
-                            }
-                        }
+                        putRating(actions);
                     } else {
 
                         int indexPurchased = 0;
@@ -818,18 +821,7 @@ public class CurrentPage {
                                     break;
                                 }
                             }
-                            for (int i = 0; i < rates.getUsers().size(); i++) {
-                                if (rates.getUsers().get(i).getCredentials().getName()
-                                        .equals(user.getCredentials().getName())) {
-                                    Movie movierated = new Movie(currentMovieList.get(0));
-                                    rates.getUsers().get(i).getRatedMovies()
-                                            .add(movierated);
-                                    rates.getUsers().get(i).getRatedMovies().get(rates
-                                            .getUsers().get(i).getRatedMovies().size() - 1)
-                                            .setRating(actions.getRate());
-                                    break;
-                                }
-                            }
+                            putRating(actions);
                         } else {
                             for (int i = 0; i < rates.getUsers().size(); i++) {
                                 if (rates.getUsers().get(i).getCredentials().getName()
@@ -849,18 +841,7 @@ public class CurrentPage {
                                 }
 
                             }
-                            for (int i = 0; i < rates.getUsers().size(); i++) {
-                                if (rates.getUsers().get(i).getCredentials().getName()
-                                        .equals(user.getCredentials().getName())) {
-                                    Movie movierated = new Movie(currentMovieList.get(0));
-                                    rates.getUsers().get(i).getRatedMovies()
-                                            .add(movierated);
-                                    rates.getUsers().get(i).getRatedMovies().get(rates
-                                                    .getUsers().get(i).getRatedMovies().size() - 1)
-                                            .setRating(actions.getRate());
-                                    break;
-                                }
-                            }
+                            putRating(actions);
                         }
                     }
                     Double ratingMovie = null;
@@ -880,79 +861,14 @@ public class CurrentPage {
                             ratingMovie = rating;
                             numRatingsMovie = dataBase.getAllmovies().get(i).getNumRatings();
                             dataBase.getAllmovies().get(i).setRating(rating);
-                            for (int k = 0; k < this.user.getPurchasedMovies().size(); k++) {
-                                if (this.user.getPurchasedMovies().get(k).getName().equals(this.movie)) {
-                                    this.user.getPurchasedMovies().get(k).setRating(ratingMovie);
-                                    this.user.getPurchasedMovies().get(k).setNumRatings(numRatingsMovie);
-                                }
-                            }
-                            for (int k = 0; k < this.user.getWatchedMovies().size(); k++) {
-                                if (this.user.getWatchedMovies().get(k).getName().equals(this.movie)) {
-                                    this.user.getWatchedMovies().get(k).setRating(ratingMovie);
-                                    this.user.getWatchedMovies().get(k).setNumRatings(numRatingsMovie);
-                                }
-                            }
-                            for (int k = 0; k < this.user.getLikedMovies().size(); k++) {
-                                if (this.user.getLikedMovies().get(k).getName().equals(this.movie)) {
-                                    this.user.getLikedMovies().get(k).setRating(ratingMovie);
-                                    this.user.getLikedMovies().get(k).setNumRatings(numRatingsMovie);
-                                }
-                            }
-                            for (int k = 0; k < this.user.getRatedMovies().size(); k++) {
-                                if (this.user.getRatedMovies().get(k).getName().equals(this.movie)) {
-                                    this.user.getRatedMovies().get(k).setRating(ratingMovie);
-                                    this.user.getRatedMovies().get(k).setNumRatings(numRatingsMovie);
-                                }
-                            }
+                            setRatingCurrentUser(rating, numRatingsMovie);
                             for (Movie value : this.currentMovieList) {
                                 value.setNumLikes(dataBase.getAllmovies().get(i).getNumLikes());
                             }
                         }
                     }
-                    for (int i = 0; i < dataBase.getAllusers().size(); i++) {
-//                        if (!dataBase.getAllusers().get(i).getCredentials().getName().equals(
-//                                this.user.getCredentials().getName())) {
-                            for (int j = 0; j < dataBase.getAllusers().get(i)
-                                    .getPurchasedMovies().size(); j++) {
-                                if (dataBase.getAllusers().get(i).getPurchasedMovies().get(j)
-                                        .getName().equals(currentMovieList.get(0).getName())) {
-                                    dataBase.getAllusers().get(i).getPurchasedMovies().get(j)
-                                            .setRating(ratingMovie);
-                                    dataBase.getAllusers().get(i).getPurchasedMovies().get(j)
-                                            .setNumRatings(numRatingsMovie);
-                                }
-                            }
-                            for (int j = 0; j < dataBase.getAllusers().get(i)
-                                    .getWatchedMovies().size(); j++) {
-                                if (dataBase.getAllusers().get(i).getWatchedMovies().get(j)
-                                        .getName().equals(currentMovieList.get(0).getName())) {
-                                    dataBase.getAllusers().get(i).getWatchedMovies().get(j)
-                                            .setRating(ratingMovie);
-                                    dataBase.getAllusers().get(i).getWatchedMovies().get(j)
-                                            .setNumRatings(numRatingsMovie);
-                                }
-                            }
-                            for (int j = 0; j < dataBase.getAllusers().get(i)
-                                    .getLikedMovies().size(); j++) {
-                                if (dataBase.getAllusers().get(i).getLikedMovies().get(j)
-                                        .getName().equals(currentMovieList.get(0).getName())) {
-                                    dataBase.getAllusers().get(i).getLikedMovies().get(j)
-                                            .setRating(ratingMovie);
-                                    dataBase.getAllusers().get(i).getLikedMovies().get(j)
-                                            .setNumRatings(numRatingsMovie);
-                                }
-                            }
-                            for (int j = 0; j < dataBase.getAllusers().get(i)
-                                    .getRatedMovies().size(); j++) {
-                                if (dataBase.getAllusers().get(i).getRatedMovies().get(j)
-                                        .getName().equals(currentMovieList.get(0).getName())) {
-                                    dataBase.getAllusers().get(i).getRatedMovies().get(j)
-                                            .setRating(ratingMovie);
-                                    dataBase.getAllusers().get(i).getRatedMovies().get(j)
-                                            .setNumRatings(numRatingsMovie);
-                                }
-                        }
-                    }
+                    setRatingDatabase(ratingMovie, numRatingsMovie);
+
                     this.succes = 1;
                     for (int i = 0; i < dataBase.getAllusers().size(); i++) {
                         if (dataBase.getAllusers().get(i).getCredentials().getName()
@@ -960,7 +876,6 @@ public class CurrentPage {
                             newuser = new User(dataBase.getAllusers().get(i));
                         }
                     }
-                    //newuser = new User(user);
                     if (currentMovieList == null) {
                         outCommand = new OutCommand(null, newuser);
                     } else {
@@ -979,7 +894,116 @@ public class CurrentPage {
         output.addPOJO(outCommand);
     }
 
-    private Double calculateNewRate(User user, String name) {
+    /**
+     * acesta metoda pune in baza de date rating-ul si numarul de rating-uri noi
+     * @param ratingMovie
+     * @param numRatingsMovie
+     */
+    private void setRatingDatabase(final double ratingMovie, final int numRatingsMovie) {
+        for (int i = 0; i < dataBase.getAllusers().size(); i++) {
+            for (int j = 0; j < dataBase.getAllusers().get(i)
+                    .getPurchasedMovies().size(); j++) {
+                if (dataBase.getAllusers().get(i).getPurchasedMovies().get(j)
+                        .getName().equals(currentMovieList.get(0).getName())) {
+                    dataBase.getAllusers().get(i).getPurchasedMovies().get(j)
+                            .setRating(ratingMovie);
+                    dataBase.getAllusers().get(i).getPurchasedMovies().get(j)
+                            .setNumRatings(numRatingsMovie);
+                }
+            }
+            for (int j = 0; j < dataBase.getAllusers().get(i)
+                    .getWatchedMovies().size(); j++) {
+                if (dataBase.getAllusers().get(i).getWatchedMovies().get(j)
+                        .getName().equals(currentMovieList.get(0).getName())) {
+                    dataBase.getAllusers().get(i).getWatchedMovies().get(j)
+                            .setRating(ratingMovie);
+                    dataBase.getAllusers().get(i).getWatchedMovies().get(j)
+                            .setNumRatings(numRatingsMovie);
+                }
+            }
+            for (int j = 0; j < dataBase.getAllusers().get(i)
+                    .getLikedMovies().size(); j++) {
+                if (dataBase.getAllusers().get(i).getLikedMovies().get(j)
+                        .getName().equals(currentMovieList.get(0).getName())) {
+                    dataBase.getAllusers().get(i).getLikedMovies().get(j)
+                            .setRating(ratingMovie);
+                    dataBase.getAllusers().get(i).getLikedMovies().get(j)
+                            .setNumRatings(numRatingsMovie);
+                }
+            }
+            for (int j = 0; j < dataBase.getAllusers().get(i)
+                    .getRatedMovies().size(); j++) {
+                if (dataBase.getAllusers().get(i).getRatedMovies().get(j)
+                        .getName().equals(currentMovieList.get(0).getName())) {
+                    dataBase.getAllusers().get(i).getRatedMovies().get(j)
+                            .setRating(ratingMovie);
+                    dataBase.getAllusers().get(i).getRatedMovies().get(j)
+                            .setNumRatings(numRatingsMovie);
+                }
+            }
+        }
+    }
+
+    /**
+     * metoda ajutatoare pentru a pastra cu ajutorul clasei Rates valorile
+     * citite de la input pentru fiecare rating dat
+     * @param actions
+     */
+    private void putRating(final Actions actions) {
+        for (int i = 0; i < rates.getUsers().size(); i++) {
+            if (rates.getUsers().get(i).getCredentials().getName()
+                    .equals(user.getCredentials().getName())) {
+                Movie movierated = new Movie(currentMovieList.get(0));
+                rates.getUsers().get(i).getRatedMovies()
+                        .add(movierated);
+                rates.getUsers().get(i).getRatedMovies().get(rates
+                        .getUsers().get(i).getRatedMovies().size() - 1)
+                        .setRating(actions.getRate());
+                break;
+            }
+        }
+    }
+
+    /**
+     * seteaza rating-ul si pentru utilizatorul curent
+     * @param ratingMovie
+     * @param numRatingsMovie
+     */
+    private void setRatingCurrentUser(final double ratingMovie, final int numRatingsMovie) {
+        for (int k = 0; k < this.user.getPurchasedMovies().size(); k++) {
+            if (this.user.getPurchasedMovies().get(k).getName().equals(this.movie)) {
+                this.user.getPurchasedMovies().get(k).setRating(ratingMovie);
+                this.user.getPurchasedMovies().get(k).setNumRatings(numRatingsMovie);
+            }
+        }
+        for (int k = 0; k < this.user.getWatchedMovies().size(); k++) {
+            if (this.user.getWatchedMovies().get(k).getName().equals(this.movie)) {
+                this.user.getWatchedMovies().get(k).setRating(ratingMovie);
+                this.user.getWatchedMovies().get(k).setNumRatings(numRatingsMovie);
+            }
+        }
+        for (int k = 0; k < this.user.getLikedMovies().size(); k++) {
+            if (this.user.getLikedMovies().get(k).getName().equals(this.movie)) {
+                this.user.getLikedMovies().get(k).setRating(ratingMovie);
+                this.user.getLikedMovies().get(k).setNumRatings(numRatingsMovie);
+            }
+        }
+        for (int k = 0; k < this.user.getRatedMovies().size(); k++) {
+            if (this.user.getRatedMovies().get(k).getName().equals(this.movie)) {
+                this.user.getRatedMovies().get(k).setRating(ratingMovie);
+                this.user.getRatedMovies().get(k).setNumRatings(numRatingsMovie);
+            }
+        }
+    }
+
+    /**
+     * metoda este apelata in momentul in care un film primeste un nou rating si
+     * trebuie recalculat totalul
+     * @param user
+     * @param name
+     * @return
+     */
+    private Double calculateNewRate(final User user, final String name) {
         Double rating = null;
         Double sum = 0.0;
         int num = 0;
@@ -987,7 +1011,8 @@ public class CurrentPage {
             if (dataBase.getAllusers().get(i).getCredentials().getName().equals(user
                     .getCredentials().getName())) {
                 for (int j = 0; j < dataBase.getAllusers().get(i).getRatedMovies().size(); j++) {
-                    if (dataBase.getAllusers().get(i).getRatedMovies().get(j).getName().equals(name)) {
+                    if (dataBase.getAllusers().get(i).getRatedMovies().get(j).getName()
+                            .equals(name)) {
                         sum += dataBase.getAllusers().get(i).getRatedMovies().get(j).getRating();
                         num++;
                         break;
@@ -997,8 +1022,10 @@ public class CurrentPage {
                 for (int j = 0; j < rates.getUsers().size(); j++) {
                     if (rates.getUsers().get(j).getCredentials().getName()
                             .equals(dataBase.getAllusers().get(i).getCredentials().getName())) {
-                        for (int k = 0; k < dataBase.getAllusers().get(i).getRatedMovies().size(); k++) {
-                            if (dataBase.getAllusers().get(i).getRatedMovies().get(k).getName().equals(name)) {
+                        for (int k = 0; k < dataBase.getAllusers().get(i)
+                                .getRatedMovies().size(); k++) {
+                            if (dataBase.getAllusers().get(i).getRatedMovies().get(k).getName()
+                                    .equals(name)) {
                                 sum += rates.getUsers().get(j).getRatedMovies().get(k).getRating();
                                 num++;
                                 break;
@@ -1014,9 +1041,8 @@ public class CurrentPage {
 
     private void setRatingByUser(final Actions actions, final int i) {
         if (dataBase.getAllusers().get(i).getRatedMovies().size() > 0) {
-//            for (int j = 0; j < dataBase.getAllusers().get(i).getRatedMovies().size(); j++) {
                 dataBase.getAllusers().get(i).getRatedMovies().get(dataBase.getAllusers()
-                        .get(i).getRatedMovies().size() -1).setRating(actions.getRate());
+                        .get(i).getRatedMovies().size() - 1).setRating(actions.getRate());
 
         } else {
             dataBase.getAllusers().get(i).getRatedMovies().get(0).setRating(actions.getRate());
@@ -1110,8 +1136,12 @@ public class CurrentPage {
         return allmovies;
     }
 
-    public void executeSubcribe(final Actions actions, final ArrayNode output,
-                                final User currentUser) {
+    /**
+     * metoda pentru actiunea de abonare
+     * @param actions
+     * @param output
+     */
+    public void executeSubcribe(final Actions actions, final ArrayNode output) {
         OutCommand outCommand;
         if (this.getCurrentPage.getCurrent().equals("see details")) {
             boolean ok = false;
@@ -1125,6 +1155,7 @@ public class CurrentPage {
                                 if (user.getSubscribe().get(k)
                                         .equals(actions.getSubscribedGenre())) {
                                     hasgenre = true;
+                                    break;
                                 }
                             }
                         }
@@ -1159,132 +1190,166 @@ public class CurrentPage {
         }
     }
 
+    /**
+     * metoda pentru a adauga un nou film sau a sterge unul din baza de date
+     * @param actions
+     * @param output
+     * @param currentUser
+     */
     public void executeDatabase(final Actions actions, final ArrayNode output,
                                 final CurrentUser currentUser) {
         if (actions.getFeature().equals("add")) {
-            for (int i = 0; i < dataBase.getAllmovies().size(); i++) {
-                if(dataBase.getAllmovies().get(i).getName().equals(actions.getAddedMovie().getName())) {
-                    OutCommand outCommand = new OutCommand("Error");
-                    output.addPOJO(outCommand);
-                    return;
-                }
-            }
-            dataBase.addMovie(actions.getAddedMovie());
-            for (int i = 0; i < dataBase.getAllusers().size(); i++) {
-                boolean ok = false;
-                for (int j = 0; j < actions.getAddedMovie().getCountriesBanned().size(); j++) {
-                    if (dataBase.getAllusers().get(i).getCredentials().getCountry()
-                            .contains(actions.getAddedMovie().getCountriesBanned().get(j))) {
-                        ok = true;
-                    }
-                }
-                if (!ok) {
-                    boolean finish = true;
-                    for (int j = 0; j < dataBase.getAllusers().get(i).getSubscribe().size(); j++) {
-                        for (int k = 0; k < actions.getAddedMovie().getGenres().size(); k++) {
-                            if (dataBase.getAllusers().get(i).getSubscribe().get(j).contains(actions
-                                    .getAddedMovie().getGenres().get(k))) {
-                                Notifications notification = new Notifications(actions.getAddedMovie()
-                                        .getName(), "ADD");
-                                dataBase.getAllusers().get(i).getNotifications().add(notification);
-                                this.user.getNotifications().add(notification);
-                                finish = false;
-                                break;
-                            }
-                        }
-                        if (!finish) {
-                            break;
-                        }
-                    }
-                }
-            }
-
-
+            add(actions, output);
         } else if (actions.getFeature().equals("delete")) {
+            delete(actions, output, currentUser);
+        }
+    }
+
+    /**
+     * adaugarea unui nou film in baza de date
+     * @param actions
+     * @param output
+     */
+    private void add(final Actions actions, final ArrayNode output) {
+        for (int i = 0; i < dataBase.getAllmovies().size(); i++) {
+            if (dataBase.getAllmovies().get(i).getName().equals(actions.getAddedMovie()
+                    .getName())) {
+                OutCommand outCommand = new OutCommand("Error");
+                output.addPOJO(outCommand);
+                return;
+            }
+        }
+        dataBase.addMovie(actions.getAddedMovie());
+        for (int i = 0; i < dataBase.getAllusers().size(); i++) {
             boolean ok = false;
-            for (int i = 0; i < dataBase.getAllmovies().size(); i++) {
-                if (dataBase.getAllmovies().get(i).getName().equals(actions.getDeletedMovie())) {
+            for (int j = 0; j < actions.getAddedMovie().getCountriesBanned().size(); j++) {
+                if (dataBase.getAllusers().get(i).getCredentials().getCountry()
+                        .contains(actions.getAddedMovie().getCountriesBanned().get(j))) {
                     ok = true;
                     break;
                 }
             }
             if (!ok) {
-                OutCommand outCommand = new OutCommand("Error");
-                output.addPOJO(outCommand);
-                return;
-            } else {
-                Movie moviecop = null;
-                for (int j = 0; j < dataBase.getAllmovies().size(); j++) {
-                    if (dataBase.getAllmovies().get(j).getName().equals(actions.getDeletedMovie())) {
-                        moviecop = new Movie(dataBase.getAllmovies().get(j));
+                boolean finish = true;
+                for (int j = 0; j < dataBase.getAllusers().get(i).getSubscribe().size(); j++) {
+                    for (int k = 0; k < actions.getAddedMovie().getGenres().size(); k++) {
+                        if (dataBase.getAllusers().get(i).getSubscribe().get(j)
+                                .contains(actions.getAddedMovie().getGenres().get(k))) {
+                            Notifications notification = new Notifications(actions
+                                    .getAddedMovie().getName(), "ADD");
+                            dataBase.getAllusers().get(i).getNotifications().add(notification);
+                            this.user.getNotifications().add(notification);
+                            finish = false;
+                            break;
+                        }
+                    }
+                    if (!finish) {
                         break;
                     }
                 }
-                dataBase.getAllmovies().remove(moviecop);
-                for (int i = 0; i < dataBase.getAllusers().size(); i++) {
-                    for (int j = 0; j < dataBase.getAllusers().get(i).getPurchasedMovies()
-                            .size(); j++) {
-                        if (dataBase.getAllusers().get(i).getPurchasedMovies().get(j).getName()
-                                .equals(actions.getDeletedMovie())) {
-                            Notifications notification = new Notifications(actions.getDeletedMovie(),
-                                    "DELETE");
-                            dataBase.getAllusers().get(i).getNotifications().add(notification);
-                            this.user.getNotifications().add(notification);
-                            if (!dataBase.getAllusers().get(i).getCredentials().getName()
-                                    .equals(currentUser.user().getCredentials().getName())) {
-                                if (dataBase.getAllusers().get(i).getCredentials()
-                                        .getAccountType().equals("premium")) {
-                                    dataBase.getAllusers().get(i).setNumFreePremiumMovies(dataBase
-                                            .getAllusers().get(i).getNumFreePremiumMovies() + 1);
-                                } else {
-                                    dataBase.getAllusers().get(i).setTokensCount(dataBase.getAllusers()
-                                            .get(i).getTokensCount() + 2);
-                                }
+            }
+        }
+    }
+    private void delete(final Actions actions, final ArrayNode output,
+                        final CurrentUser currentUser) {
+        boolean ok = false;
+        for (int i = 0; i < dataBase.getAllmovies().size(); i++) {
+            if (dataBase.getAllmovies().get(i).getName().equals(actions.getDeletedMovie())) {
+                ok = true;
+                break;
+            }
+        }
+        if (!ok) {
+            OutCommand outCommand = new OutCommand("Error");
+            output.addPOJO(outCommand);
+            return;
+        } else {
+            Movie moviecop = null;
+            for (int j = 0; j < dataBase.getAllmovies().size(); j++) {
+                if (dataBase.getAllmovies().get(j).getName().equals(actions
+                        .getDeletedMovie())) {
+                    moviecop = new Movie(dataBase.getAllmovies().get(j));
+                    break;
+                }
+            }
+            dataBase.getAllmovies().remove(moviecop);
+            for (int i = 0; i < dataBase.getAllusers().size(); i++) {
+                for (int j = 0; j < dataBase.getAllusers().get(i).getPurchasedMovies()
+                        .size(); j++) {
+                    if (dataBase.getAllusers().get(i).getPurchasedMovies().get(j).getName()
+                            .equals(actions.getDeletedMovie())) {
+                        Notifications notification = new Notifications(actions
+                                .getDeletedMovie(),
+                                "DELETE");
+                        dataBase.getAllusers().get(i).getNotifications().add(notification);
+                        this.user.getNotifications().add(notification);
+                        if (!dataBase.getAllusers().get(i).getCredentials().getName()
+                                .equals(currentUser.user().getCredentials().getName())) {
+                            if (dataBase.getAllusers().get(i).getCredentials()
+                                    .getAccountType().equals("premium")) {
+                                dataBase.getAllusers().get(i).setNumFreePremiumMovies(dataBase
+                                        .getAllusers().get(i).getNumFreePremiumMovies() + 1);
+                            } else {
+                                dataBase.getAllusers().get(i).setTokensCount(dataBase
+                                        .getAllusers()
+                                        .get(i).getTokensCount() + 2);
                             }
-                            dataBase.getAllusers().get(i).getPurchasedMovies()
-                                    .remove(moviecop);
-                            break;
                         }
+                        dataBase.getAllusers().get(i).getPurchasedMovies()
+                                .remove(moviecop);
+                        break;
                     }
-                    for (int j = 0; j < dataBase.getAllusers().get(i).getWatchedMovies()
-                            .size(); j++) {
-                        if (dataBase.getAllusers().get(i).getWatchedMovies().get(j).getName()
-                                .equals(actions.getDeletedMovie())) {
-                            dataBase.getAllusers().get(i).getWatchedMovies()
-                                    .remove(moviecop);
-                            break;
-                        }
+                }
+                removeMovie(moviecop, actions);
+                if (dataBase.getAllusers().get(i).getCredentials().getName()
+                        .equals(this.user.getCredentials().getName())) {
+                    if (this.user.getCredentials().getAccountType().equals("premium")) {
+                        this.user.setNumFreePremiumMovies(this.user.getNumFreePremiumMovies()
+                                + 1);
+                        dataBase.getAllusers().get(i).setNumFreePremiumMovies(dataBase
+                                .getAllusers().get(i).getNumFreePremiumMovies() + 1);
+                    } else {
+                        this.user.setTokensCount(this.user.getTokensCount() + 2);
+                        dataBase.getAllusers().get(i).setTokensCount(dataBase.getAllusers()
+                                .get(i).getTokensCount() + 2);
                     }
-                    for (int j = 0; j < dataBase.getAllusers().get(i).getLikedMovies()
-                            .size(); j++) {
-                        if (dataBase.getAllusers().get(i).getLikedMovies().get(j).getName()
-                                .equals(actions.getDeletedMovie())) {
-                            dataBase.getAllusers().get(i).getLikedMovies()
-                                    .remove(moviecop);
-                            break;
-                        }
-                    }
-                    for (int j = 0; j < dataBase.getAllusers().get(i).getRatedMovies()
-                            .size(); j++) {
-                        if (dataBase.getAllusers().get(i).getRatedMovies().get(j).getName()
-                                .equals(actions.getDeletedMovie())) {
-                            dataBase.getAllusers().get(i).getRatedMovies()
-                                    .remove(moviecop);
-                            break;
-                        }
-                    }
-                    if (dataBase.getAllusers().get(i).getCredentials().getName()
-                            .equals(this.user.getCredentials().getName())) {
-                        if (this.user.getCredentials().getAccountType().equals("premium")) {
-                            this.user.setNumFreePremiumMovies(this.user.getNumFreePremiumMovies() + 1);
-                            dataBase.getAllusers().get(i).setNumFreePremiumMovies(dataBase
-                                    .getAllusers().get(i).getNumFreePremiumMovies() + 1);
-                        } else {
-                            this.user.setTokensCount(this.user.getTokensCount() + 2);
-                            dataBase.getAllusers().get(i).setTokensCount(dataBase.getAllusers()
-                                    .get(i).getTokensCount() + 2);
-                        }
-                    }
+                }
+            }
+        }
+    }
+    /**
+     * sterge filmul din rubricile de filme care au fost vazute,
+     * apreciate si evaluate
+     * @param moviecop
+     * @param actions
+     */
+    private void removeMovie(final Movie moviecop, final Actions actions) {
+        for (int i = 0; i < dataBase.getAllusers().size(); i++) {
+            for (int j = 0; j < dataBase.getAllusers().get(i).getWatchedMovies()
+                    .size(); j++) {
+                if (dataBase.getAllusers().get(i).getWatchedMovies().get(j).getName()
+                        .equals(actions.getDeletedMovie())) {
+                    dataBase.getAllusers().get(i).getWatchedMovies()
+                            .remove(moviecop);
+                    break;
+                }
+            }
+            for (int j = 0; j < dataBase.getAllusers().get(i).getLikedMovies()
+                    .size(); j++) {
+                if (dataBase.getAllusers().get(i).getLikedMovies().get(j).getName()
+                        .equals(actions.getDeletedMovie())) {
+                    dataBase.getAllusers().get(i).getLikedMovies()
+                            .remove(moviecop);
+                    break;
+                }
+            }
+            for (int j = 0; j < dataBase.getAllusers().get(i).getRatedMovies()
+                    .size(); j++) {
+                if (dataBase.getAllusers().get(i).getRatedMovies().get(j).getName()
+                        .equals(actions.getDeletedMovie())) {
+                    dataBase.getAllusers().get(i).getRatedMovies()
+                            .remove(moviecop);
+                    break;
                 }
             }
         }
@@ -1369,15 +1434,21 @@ public class CurrentPage {
     /**
      * @param memento
      */
-    public void setMemento(MementoUse memento) {
+    public void setMemento(final MementoUse memento) {
         this.memento = memento;
     }
 
+    /**
+     * @return
+     */
     public Rates getRates() {
         return rates;
     }
 
-    public void setRates(Rates rates) {
+    /**
+     * @param rates
+     */
+    public void setRates(final Rates rates) {
         this.rates = rates;
     }
 }

@@ -13,39 +13,48 @@ public class Rates {
         }
     }
 
+    /**
+     * se adauga un nou rating
+     * @param username
+     * @param rating
+     * @param name
+     */
     public void addRate(final String username, final Double rating, final String name) {
-        for (int i = 0; i < users.size(); i ++) {
-            if (users.get(i).getCredentials().getName().equals(username)) {
-                for (int j = 0; j < users.get(i).getRatedMovies().size(); j++) {
-                    if (users.get(i).getRatedMovies().get(j).getName().equals(name)) {
-                        users.get(i).getRatedMovies().get(j).setRating(rating);
+        for (User user : users) {
+            if (user.getCredentials().getName().equals(username)) {
+                for (int j = 0; j < user.getRatedMovies().size(); j++) {
+                    if (user.getRatedMovies().get(j).getName().equals(name)) {
+                        user.getRatedMovies().get(j).setRating(rating);
                     }
                 }
             }
         }
     }
 
-    public void addMovies(final ArrayList<Movie> ratedMovies, final User user) {
-        for (User value : users) {
-            if (value.getCredentials().getName().equals(user.getCredentials().getName())) {
-                value.getRatedMovies().addAll(ratedMovies);
-                break;
-            }
-        }
-    }
-
+    /**
+     * @return
+     */
     public ArrayList<User> getUsers() {
         return users;
     }
 
+    /**
+     * @param users
+     */
     public void setUsers(final ArrayList<User> users) {
         this.users = users;
     }
 
+    /**
+     * @return
+     */
     public ArrayList<Double> getCurrentRate() {
         return currentRate;
     }
 
+    /**
+     * @param currentRate
+     */
     public void setCurrentRate(final ArrayList<Double> currentRate) {
         this.currentRate = currentRate;
     }

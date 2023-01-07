@@ -72,14 +72,13 @@ public class DataBase {
     public void addWhenRegister(final User user) {
         this.allusers.add(user);
     }
+
+    /**
+     * se adauga un nou film
+     * @param movie
+     */
     public void addMovie(final Movie movie) {
         this.allmovies.add(movie);
         this.allmovies.get(this.allmovies.size() - 1).setRating((double) 0);
-    }
-    public void deleteMovie(final String movie) {
-        for (int i = 0; i < getAllmovies().size(); i++)
-            if (getAllmovies().get(i).getName().equals(movie)) {
-                this.allmovies.remove(movie);
-            }
     }
 }

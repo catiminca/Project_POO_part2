@@ -1,6 +1,10 @@
 package platform;
 
-import sorts.*;
+import sorts.GenreSort;
+import sorts.ActorsSort;
+import sorts.Visitable;
+import sorts.Visitor;
+import sorts.SortVisitor;
 
 import java.util.ArrayList;
 
@@ -82,7 +86,13 @@ public class Contains {
         }
         return allSortedMovies;
     }
-    public Visitable sortByActors(ArrayList<Movie> movies) {
+
+    /**
+     * sortare dupa actori folosind design pattern-ul visitor
+     * @param movies
+     * @return
+     */
+    public Visitable sortByActors(final ArrayList<Movie> movies) {
         Visitable[] v = new Visitable[] {new ActorsSort(movies, actors)};
         Visitor visitor = new SortVisitor();
         movies.clear();
@@ -91,7 +101,13 @@ public class Contains {
         }
         return v[0];
     }
-    public Visitable sortByGenre(ArrayList<Movie> movies) {
+
+    /**
+     * sortare dupa genul de film folosind design pattern-ul visitor
+     * @param movies
+     * @return
+     */
+    public Visitable sortByGenre(final ArrayList<Movie> movies) {
         Visitable[] v = new Visitable[] {new GenreSort(movies, genre)};
         Visitor visitor = new SortVisitor();
         movies.clear();

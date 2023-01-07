@@ -168,11 +168,17 @@ public class Movie {
         this.numRatings = nrRating;
     }
 
+    /**
+     * @return
+     */
     public int getNumLikeGenres() {
         return numLikeGenres;
     }
 
-    public void setNumLikeGenres(int numLikeGenres) {
+    /**
+     * @param numLikeGenres
+     */
+    public void setNumLikeGenres(final int numLikeGenres) {
         this.numLikeGenres = numLikeGenres;
     }
 }

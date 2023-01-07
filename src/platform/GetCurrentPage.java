@@ -38,10 +38,4 @@ public class GetCurrentPage {
         return new Memento(current);
     }
 
-    /**
-     * @param Memento
-     */
-    public void getStateFromMemento(final Memento Memento) {
-        current = Memento.getState();
-    }
 }

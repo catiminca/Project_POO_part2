@@ -21,8 +21,12 @@ public class MementoUse {
         int index = memetoList.size() - 1;
         return memetoList.get(index);
     }
-    public Memento getByIndex(int index) {
-        //int index = memetoList.size() - 1;
+
+    /**
+     * @param index
+     * @return
+     */
+    public Memento getByIndex(final int index) {
         return memetoList.get(index);
     }
 
@@ -33,6 +37,9 @@ public class MementoUse {
         memetoList.remove(memento);
     }
 
+    /**
+     * @return
+     */
     public int size() {
         return memetoList.size();
     }

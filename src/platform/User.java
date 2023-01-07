@@ -20,8 +20,6 @@ public class User {
     public User(final UserInput user) {
         this.credentials = user.getCredentials();
         this.tokensCount = user.getTokensCount();
-        user.setFreeMoviesNumber(15);
-        this.numFreePremiumMovies = user.getFreeMoviesNumber();
         this.purchasedMovies = new ArrayList<>();
         for (MovieInput movie : user.getPurchasedMovies()) {
             Movie movieCop = new Movie(movie);
@@ -72,14 +70,15 @@ public class User {
         this.notifications = new ArrayList<>();
         if (user.getNotifications() != null) {
             for (int i = 0; i < user.getNotifications().size(); i++) {
-                Notifications notification = new Notifications(user.getNotifications().get(i).getMovieName(),
-                        user.getNotifications().get(i).getMessage());
+                Notifications notification = new Notifications(user.getNotifications()
+                        .get(i).getMovieName(), user.getNotifications().get(i).getMessage());
                 this.notifications.add(notification);
             }
         }
         this.subscribe = new ArrayList<>();
-        if (user.getSubscribe() != null)
+        if (user.getSubscribe() != null) {
             this.subscribe.addAll(user.getSubscribe());
+        }
     }
 
     public User(final String name, final String password, final String accountType,
@@ -88,9 +87,8 @@ public class User {
     }
 
     public User(final String name, final String password, final String accountType,
-                final String country, final String balance, final ArrayList<Movie> purchasedMovies,
-                final ArrayList<Movie> watchedMovies, final ArrayList<Movie> likedMovies,
-                final ArrayList<Movie> ratedMovies) {
+                final String country, final String balance,
+                final ArrayList<Movie> purchasedMovies) {
         this.credentials = new Credentials(name, password, accountType, country, balance);
 
     }

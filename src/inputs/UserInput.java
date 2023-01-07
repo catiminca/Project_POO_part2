@@ -68,7 +68,7 @@ public final class UserInput {
         return freeMoviesNumber;
     }
 
-    public void setFreeMoviesNumber(int freeMoviesNumber) {
+    public void setFreeMoviesNumber(final int freeMoviesNumber) {
         this.freeMoviesNumber = freeMoviesNumber;
     }
 }

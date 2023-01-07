@@ -80,7 +80,8 @@ public class AllActions {
                 case "on page" -> {
 
                     if (currentPage != null) {
-                        currentPage.executePageCommand(action, output, this.currentUser, base, rates);
+                        currentPage.executePageCommand(action, output, this.currentUser, base,
+                                rates);
                     }
                     if (action.getFeature().equals("rate") && currentPage.getSucces() == 1) {
                         rates = new Rates(currentPage.getRates().getUsers());
@@ -100,14 +101,6 @@ public class AllActions {
                         base = new DataBase(currentPage.getDataBase());
                     }
                 }
-//                case "subscribe" -> {
-//                    if (currentPage != null)  {
-//                        currentPage.executeSubcribe(action, output, this.currentUser);
-//                    }
-//                    if (currentPage != null) {
-//                        base = new DataBase(currentPage.getDataBase());
-//                    }
-//                }
                 case "database" -> {
                     if (currentPage != null)  {
                         currentPage.executeDatabase(action, output, this.currentUser);
@@ -138,18 +131,14 @@ public class AllActions {
         }
         if (currentUser != null) {
             if (currentUser.user().getCredentials().getAccountType().equals("premium")) {
-                Notifications notifications = new Notifications("No recommendation", "Recommendation");
-//            notifications.setMessage("Recommandation");
+                Notifications notifications = new Notifications("No recommendation",
+                        "Recommendation");
                 if (!checkForRecommendation(base).equals("No recommendation")) {
                     notifications.setMovieName(checkForRecommendation(base));
                 }
-//            String message =
                 if (currentUser.user().getNotifications() != null) {
                     currentUser.user().getNotifications().add(notifications);
                 }
-//            } else {
-//                currentUser.user().;
-//            }
                 OutCommand outCommand = new OutCommand(currentUser.user());
                 output.addPOJO(outCommand);
             }
@@ -157,7 +146,13 @@ public class AllActions {
         currentUser = null;
         current = "homepage";
     }
-    public String checkForRecommendation(DataBase base){
+
+    /**
+     * verifica daca exista vreo recomandare pentru user
+     * @param base
+     * @return
+     */
+    public String checkForRecommendation(DataBase base) {
         String recommendation = null;
         ArrayList<LikeForRecommendation> genres = new ArrayList<>();
         if (this.currentUser.user().getLikedMovies().size() != 0) {
@@ -176,7 +171,14 @@ public class AllActions {
         }
         return recommendation;
     }
-    public void addGenre(String genre, ArrayList<LikeForRecommendation> genres) {
+
+    /**
+     * functie ajutatoare pentru recomandare in care se verifica daca genul a mai aparut
+     * pana acum si se stabileste numarul de aprecieri pentru fiecare
+     * @param genre
+     * @param genres
+     */
+    public void addGenre(final String genre, final ArrayList<LikeForRecommendation> genres) {
         boolean ok = false;
         for (LikeForRecommendation gen : genres) {
             if (gen.getGenre().equals(genre)) {
@@ -190,7 +192,15 @@ public class AllActions {
             genres.add(likeForRecommendation);
         }
     }
-    public String checkMovies(DataBase dataBase, ArrayList<LikeForRecommendation> genres){
+
+    /**
+     * se sorteaza filmele in functie de genuri si se gaseste recomandarea
+     * @param dataBase
+     * @param genres
+     * @return
+     */
+    public String checkMovies(final DataBase dataBase,
+                              final ArrayList<LikeForRecommendation> genres) {
         ArrayList<Movie> allmovies = new ArrayList<>();
         for (int i = 0; i < dataBase.getAllmovies().size(); i++) {
             boolean ok = true;
@@ -224,7 +234,7 @@ public class AllActions {
             }
         }
         allmovies.sort(Comparator.comparingInt(Movie :: getNumLikeGenres));
-        int max = - 1;
+        int max = -1;
         int index = 0;
         Movie movieprev = null;
         for (int i = 0; i < allmovies.size(); i++) {
@@ -251,20 +261,11 @@ public class AllActions {
                 }
             }
         }
-        if (allmovies.get(index) != null)
+        if (allmovies.get(index) != null) {
             return allmovies.get(index).getName();
+        }
         return "No recommendation";
     }
-//    public String checkNumLikes(ArrayList<LikeForRecommendation> genres) {
-//        int max = -1;
-//        String recommendation;
-//        for (int i = 0; i < genres.size(); i++) {
-//            if (genres.get(i).getNrlikes() > max) {
-//                max = genres.get(i).getNrlikes();
-//                recommendation = genres.get(i).getGenre();
-//            }
-//        }
-//    }
     /**
      */
     public ArrayList<Actions> getActions() {
